@@ -47,8 +47,11 @@ print(f"Samples are {SAMPLES}")
 
 rule all:
     input:
-        expand(os.path.join(SMALT_OUT, "{sample}_good_out_vs_"+ DATABASE +".sam"), sample=SAMPLES)
-
+        expand(os.path.join(SMALT_OUT, "{sample}_good_out_vs_"+ DATABASE +".sam"), sample=SAMPLES),
+        expand(os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab"),sample=SAMPLES),
+#        os.path.join(SMALT_OUT,'all_normalized.txt'),
+#        os.path.join(SMALT_OUT,'all_hits.txt'),
+        os.path.join(SMALT_OUT,'all_normalized_per_million.txt')
 
 rule smalt:
     input:
@@ -62,3 +65,43 @@ rule smalt:
     shell:
         "{config[executables][smalt]}  map -n {threads} -f sam -y 1 -o {params.outfile} {params.database} {input.fasta} "
 
+rule gen_tsv:
+    input:
+        sam=os.path.join(SMALT_OUT, "{sample}_good_out_vs_"+ DATABASE +".sam")
+    output:
+        os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab")
+    params:
+        outfile=os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab")
+    threads: 1
+    shell:
+        'grep -v ^@ {input.sam} | cut -f1,3 | sort | uniq | cut -f2 | sort | uniq -c | sort -nr  | sed -e "s/^ *//" | tr " " "\\t"  > {params.outfile}'
+
+rule do_tj:
+    output:
+        os.path.join(SMALT_OUT,'tj.txt')
+    params:
+        datadir = FASTA,
+        outdir  = SMALT_OUT
+    threads: 1
+    shell:
+        'perl do_tj.pl {params.datadir} {params.outdir}'
+
+rule smalt_norm:
+    input:
+        tj = os.path.join(SMALT_OUT,'tj.txt'),
+        files = expand(os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab"),sample=SAMPLES)
+    output:
+#        f1 = os.path.join(SMALT_OUT,'all_normalized.txt'),
+#        f2 = os.path.join(SMALT_OUT,'all_hits.txt'),
+        f3 = os.path.join(SMALT_OUT,'all_normalized_per_million.txt')
+    params:
+        database=os.path.join(DB_DIR, DATABASE)
+    threads: 1
+    shell:
+        "perl frap_normalization_better.pl -t {input.tj} -m -l 50000 -f {params.database} {input.files} > {output.f3}"
+        
+
+
+#rule frap_normal:
+#    input:
+        
