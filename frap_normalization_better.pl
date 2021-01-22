@@ -11,7 +11,7 @@ my %desc;
 my %Tj;
 my $tj_file;
 my $millon;
-my $lmean;
+my $lmean=50000;
 
 GetOptions ("f=s"     => \$id,
 	    "h"       => \$hits_only,	

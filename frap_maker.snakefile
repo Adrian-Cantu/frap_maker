@@ -49,8 +49,8 @@ rule all:
     input:
         expand(os.path.join(SMALT_OUT, "{sample}_good_out_vs_"+ DATABASE +".sam"), sample=SAMPLES),
         expand(os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab"),sample=SAMPLES),
-#        os.path.join(SMALT_OUT,'all_normalized.txt'),
-#        os.path.join(SMALT_OUT,'all_hits.txt'),
+        os.path.join(SMALT_OUT,'all_normalized.txt'),
+        os.path.join(SMALT_OUT,'all_hits.txt'),
         os.path.join(SMALT_OUT,'all_normalized_per_million.txt')
 
 rule smalt:
@@ -91,14 +91,18 @@ rule smalt_norm:
         tj = os.path.join(SMALT_OUT,'tj.txt'),
         files = expand(os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab"),sample=SAMPLES)
     output:
-#        f1 = os.path.join(SMALT_OUT,'all_normalized.txt'),
-#        f2 = os.path.join(SMALT_OUT,'all_hits.txt'),
+        f1 = os.path.join(SMALT_OUT,'all_normalized.txt'),
+        f2 = os.path.join(SMALT_OUT,'all_hits.txt'),
         f3 = os.path.join(SMALT_OUT,'all_normalized_per_million.txt')
     params:
-        database=os.path.join(DB_DIR, DATABASE)
+        database=os.path.join(DB_DIR, DATABASE + '.fasta' )
     threads: 1
     shell:
-        "perl frap_normalization_better.pl -t {input.tj} -m -l 50000 -f {params.database} {input.files} > {output.f3}"
+        """
+        perl frap_normalization_better.pl -t {input.tj} -n -l 50000 -f {params.database} {input.files} > {output.f1}
+        perl frap_normalization_better.pl -t {input.tj} -h -f {params.database} {input.files} > {output.f2}
+        perl frap_normalization_better.pl -t {input.tj} -m -l 50000 -f {params.database} {input.files} > {output.f3}
+        """
         
 
 
