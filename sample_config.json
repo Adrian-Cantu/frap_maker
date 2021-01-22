@@ -1,0 +1,21 @@
+{
+    "tatabox_executables" : {
+        "smalt" : "~acantu/bin/smalt",
+        "prinseq":"~acantu/anaconda3/envs/snakemake/bin/prinseq++",
+        "blastn":"~acantu/anaconda3/envs/snakemake/bin/blastn"
+    },
+    "anth_executables" : {
+        "samtools":"~acantu/bin/samtools-1.10/samtools",
+        "smalt" : "~acantu/bin/smalt",
+        "prinseq":"~acantu/anaconda3/envs/snakemake/bin/prinseq++",
+        "blastn":"~acantu/anaconda3/envs/snakemake/bin/blastn"
+    },
+    "directories" : {
+        "data"     : "derep_data",
+        "smalt_out" : "derep_corona_out",
+        "db"        : "coronadb",
+        "db_dir"    : "/home1/mlittle/DBs/"
+    },
+    "threads" : 16
+}
+
