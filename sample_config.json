@@ -1,14 +1,11 @@
 {
     "tatabox_executables" : {
         "smalt" : "~acantu/bin/smalt",
-        "prinseq":"~acantu/anaconda3/envs/snakemake/bin/prinseq++",
-        "blastn":"~acantu/anaconda3/envs/snakemake/bin/blastn"
+        "prinseq":"~acantu/anaconda3/envs/snakemake/bin/prinseq++"
     },
     "anth_executables" : {
-        "samtools":"~acantu/bin/samtools-1.10/samtools",
         "smalt" : "~acantu/bin/smalt",
-        "prinseq":"~acantu/anaconda3/envs/snakemake/bin/prinseq++",
-        "blastn":"~acantu/anaconda3/envs/snakemake/bin/blastn"
+        "prinseq":"~acantu/anaconda3/envs/snakemake/bin/prinseq++"
     },
     "directories" : {
         "data"     : "derep_data",

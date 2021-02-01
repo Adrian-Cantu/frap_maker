@@ -29,7 +29,8 @@ my %norm;
 my %samples;
 my %sum_row;
 my @order;
-open IDS , '<' , $id;
+#print "$id\n";
+open IDS , '<' , $id or die $!;
 
 #start hashs
 foreach (@ARGV){
