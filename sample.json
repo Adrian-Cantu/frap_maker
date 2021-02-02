@@ -16,6 +16,7 @@
         "db"        : "test_virus_refseq.fasta",
         "db_dir"    : "sample_database/"
     },
+    "identity": "0.5",
     "threads" : 16
 }
 

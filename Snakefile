@@ -12,6 +12,7 @@ configfile: 'sample.json'
 FASTA       = config['directories']['data']
 SMALT_OUT   = config['directories']['smalt_out']
 THREADS     = config['threads']
+IDENT       = config['identity']
 DB_DIR      = config['directories']['db_dir']
 DATABASE = config['directories']['db']
 DATABASE_FILE_BASE   = os.path.splitext(DATABASE)[0]
@@ -98,13 +99,14 @@ rule smalt_map:
     params:
         database=lambda wildcards, input: os.path.splitext(f"{input.sma}")[0],
         smalt=config['executables']['smalt'],
-        logs="logs/smalt_map.{sample}.log"
+        logs="logs/smalt_map.{sample}.log",
+        idd=IDENT
     conda: 
         "environment.yml"
     threads: THREADS
     log: "logs/smalt_map.{sample}.log"
     shell:
-        "{params.smalt} map -n {threads} -f sam -y 1 -o {output.outfile} {params.database} {input.fasta} 2> {params.logs} "
+        "{params.smalt} map -n {threads} -f sam -y {params.idd} -o {output.outfile} {params.database} {input.fasta} 2> {params.logs} "
 
 rule gen_tsv:
     input:
