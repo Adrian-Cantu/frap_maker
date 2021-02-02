@@ -6,7 +6,7 @@ hostname = socket.gethostname()
 
 sys.stderr.write(f"Running on: {hostname}\n")
 
-#configfile: 'frap_maker.json'
+configfile: 'sample.json'
 
 
 FASTA       = config['directories']['data']
@@ -47,61 +47,74 @@ print(f"Samples are {SAMPLES}")
 
 rule all:
     input:
-        expand(os.path.join(SMALT_OUT, "{sample}_good_out_vs_"+ DATABASE +".sam"), sample=SAMPLES),
-        expand(os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab"),sample=SAMPLES),
+        expand(os.path.join(SMALT_OUT, f"{{sample}}_good_out_vs_{DATABASE}.sam"), sample=SAMPLES),
+        expand(os.path.join(SMALT_OUT, f"vs_{DATABASE}_hits.{{sample}}_good_out.tab"),sample=SAMPLES),
         os.path.join(SMALT_OUT,'all_normalized.txt'),
         os.path.join(SMALT_OUT,'all_hits.txt'),
         os.path.join(SMALT_OUT,'all_normalized_per_million.txt')
 
-rule smalt:
+rule smalt_map:
     input:
-        fasta=os.path.join(FASTA, "{sample}_good_out." + FQEXTN )
+        fasta=os.path.join(FASTA, f"{{sample}}_good_out.{FQEXTN}" )
     output:
-        os.path.join(SMALT_OUT, "{sample}_good_out_vs_" + DATABASE + ".sam")
+        outfile=os.path.join(SMALT_OUT, f"{{sample}}_good_out_vs_{DATABASE}.sam")
     params:
-        outfile=os.path.join(SMALT_OUT, "{sample}_good_out_vs_"+ DATABASE +".sam"),
-        database=os.path.join(DB_DIR, DATABASE)
+        database=os.path.join(DB_DIR, DATABASE),
+        smalt=config['executables']['smalt'],
+        logs="logs/smalt_map.{sample}.log"
+    conda: 
+        "environment.yml"
     threads: THREADS
+    log: "logs/smalt_map.{sample}.log"
     shell:
-        "{config[executables][smalt]}  map -n {threads} -f sam -y 1 -o {params.outfile} {params.database} {input.fasta} "
+        "{params.smalt} map -n {threads} -f sam -y 1 -o {output.outfile} {params.database} {input.fasta} 2> {params.logs} "
 
 rule gen_tsv:
     input:
-        sam=os.path.join(SMALT_OUT, "{sample}_good_out_vs_"+ DATABASE +".sam")
+        sam=os.path.join(SMALT_OUT, f"{{sample}}_good_out_vs_{DATABASE}.sam")
     output:
-        os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab")
-    params:
-        outfile=os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab")
+        outfile=os.path.join(SMALT_OUT, f"vs_{DATABASE}_hits.{{sample}}_good_out.tab")
+    conda:
+        "environment.yml"
     threads: 1
+    log: "logs/gen_tsv.{sample}.log"
     shell:
-        'grep -v ^@ {input.sam} | cut -f1,3 | sort | uniq | cut -f2 | sort | uniq -c | sort -nr  | sed -e "s/^ *//" | tr " " "\\t"  > {params.outfile}'
+        'grep -v ^@ {input.sam} | cut -f1,3 | sort | uniq | cut -f2 | sort | uniq -c | sort -nr  | sed -e "s/^ *//" | tr " " "\\t"  > {output.outfile} 2> {log}'
 
 rule do_tj:
     output:
         os.path.join(SMALT_OUT,'tj.txt')
     params:
         datadir = FASTA,
-        outdir  = SMALT_OUT
+        outdir= lambda wildcards, output: os.path.splitext(output[0])[0]
+#        outdir  = SMALT_OUT
+    conda:
+        "environment.yml"
     threads: 1
+    log: "logs/do_tj.log"
     shell:
-        'perl do_tj.pl {params.datadir} {params.outdir}'
+        'perl do_tj.pl {params.datadir} {params.outdir} 2> {log}'
 
 rule smalt_norm:
     input:
         tj = os.path.join(SMALT_OUT,'tj.txt'),
-        files = expand(os.path.join(SMALT_OUT, "vs_"+ DATABASE +"_hits.{sample}_good_out.tab"),sample=SAMPLES)
+        files = expand(os.path.join(SMALT_OUT, f"vs_{DATABASE}_hits.{{sample}}_good_out.tab"),sample=SAMPLES)
     output:
         f1 = os.path.join(SMALT_OUT,'all_normalized.txt'),
         f2 = os.path.join(SMALT_OUT,'all_hits.txt'),
         f3 = os.path.join(SMALT_OUT,'all_normalized_per_million.txt')
     params:
-        database=os.path.join(DB_DIR, DATABASE + '.fasta' )
+        database=os.path.join(DB_DIR,f"{DATABASE}.fasta" )
+    conda:
+        "environment.yml"
+    log:
+        "logs/smalt_norm.log"
     threads: 1
     shell:
         """
-        perl frap_normalization_better.pl -t {input.tj} -n -l 50000 -f {params.database} {input.files} > {output.f1}
-        perl frap_normalization_better.pl -t {input.tj} -h -f {params.database} {input.files} > {output.f2}
-        perl frap_normalization_better.pl -t {input.tj} -m -l 50000 -f {params.database} {input.files} > {output.f3}
+        perl frap_normalization_better.pl -t {input.tj} -n -l 50000 -f {params.database} {input.files} > {output.f1} 2> {log}
+        perl frap_normalization_better.pl -t {input.tj} -h -f {params.database} {input.files} > {output.f2} 2> {log}
+        perl frap_normalization_better.pl -t {input.tj} -m -l 50000 -f {params.database} {input.files} > {output.f3} 2> {log}
         """
         
 
