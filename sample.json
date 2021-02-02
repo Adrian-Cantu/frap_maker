@@ -11,10 +11,10 @@
         "blastn":"~acantu/anaconda3/envs/snakemake/bin/blastn"
     },
     "directories" : {
-        "data"     : "derep_data/",
-        "smalt_out" : "smalt_results/",
-        "db"        : "coronadb",
-        "db_dir"    : "/home1/mlittle/DBs/"
+        "data"     : "sample_sequences/",
+        "smalt_out" : "sample_output/",
+        "db"        : "test_virus_refseq.fasta",
+        "db_dir"    : "sample_database/"
     },
     "threads" : 16
 }
