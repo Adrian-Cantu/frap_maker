@@ -1,5 +1,7 @@
 # frap\_maker
 
+![Test](https://github.com/Adrian-Cantu/frap_maker/workflows/Test/badge.svg)
+
 This repository implements the metagenomic normalization from [FRAP](https://github.com/yinacobian/frap) in an easy to use Snakemake workflow. This workflow has the advantage that it can be easily parallelized in many cluster environments.
 
 ## Dependencies
