@@ -106,7 +106,7 @@ rule smalt_map:
     threads: THREADS
     log: "logs/smalt_map.{sample}.log"
     shell:
-        "{params.smalt} map -n {threads} -f sam -y {params.idd} -o {output.outfile} {params.database} {input.fasta} 2> {params.logs} "
+        "smalt map -n {threads} -f sam -y {params.idd} -o {output.outfile} {params.database} {input.fasta} 2> {params.logs} "
 
 rule gen_tsv:
     input:
