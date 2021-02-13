@@ -71,8 +71,8 @@ foreach(@ARGV) {
 	chomp;
 	open $filehandlers{$_}, '<' , $_  or die "Can't open $_ for output: $!";
 	my $filename = (split(/\//,$_))[-1];
-	#my $sample_id = (split(/\./,$filename))[1];
-	my ($sample_id) = ($filename =~ m!^(.*)\..*?$!s);
+	my $sample_id = (split(/\./,$filename))[-2];
+	#my ($sample_id) = ($filename =~ m!^(.*)\..*?$!s);
     $samples{$_} = $sample_id;	
 }
 
