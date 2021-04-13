@@ -30,6 +30,8 @@ config['executables'] = config[f"{hostname}_executables"]
 
 # A Snakemake regular expression matching the forward mate FASTQ files.
 # the comma after SAMPLES is important!
+
+#this part defines how fastas are scanned
 #SAMPLES,EXTENSIONS, = glob_wildcards(os.path.join(FASTA, '{sample}_good_out.{extn}'))
 SAMPLES,EXTENSIONS, = glob_wildcards(os.path.join(FASTA, '{sample}.sra_1.{extn}'))
 

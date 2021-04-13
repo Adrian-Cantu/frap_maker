@@ -10,7 +10,7 @@ Frap maker depends on the fallowing software
 
 - smalt
 - prinseq++
-- snamkemake
+- snakemake
 
 All dependencies can be installed using anaconda
 ```
@@ -19,6 +19,7 @@ conda activate frapmaker
 ```
 
 ## Usage
+
 
 ## Sun grid engine
 
