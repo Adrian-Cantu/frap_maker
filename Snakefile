@@ -120,7 +120,7 @@ rule gen_tsv:
     threads: 1
     log: "logs/gen_tsv.{sample}.log"
     shell:
-        'grep -v ^@ {input.sam} | cut -f1,3 | sort | uniq | cut -f2 | sort | uniq -c | sort -nr  | sed -e "s/^ *//" | tr " " "\\t"  > {output.outfile} 2> {log}'
+        'grep -v ^@ {input.sam} | cut -f1,3 | sort | uniq | cut -f2 | sort | uniq -c | sort -nr  | sed -e "s/^ *//" | tr " " "\\t"  > {output.outfile} 2> {log} && [[ -s {output.outfile} ]]'
 
 rule do_tj:
     output:
@@ -134,7 +134,7 @@ rule do_tj:
     threads: 1
     log: "logs/do_tj.log"
     shell:
-        'perl do_tj.pl {params.datadir} {params.outdir} 2> {log}'
+        'perl do_tj.pl {params.datadir} {params.outdir} 2> {log} && [[ -s {output} ]]'
 
 rule smalt_norm:
     input:
