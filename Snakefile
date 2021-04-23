@@ -123,6 +123,8 @@ rule gen_tsv:
         'grep -v ^@ {input.sam} | cut -f1,3 | sort | uniq | cut -f2 | sort | uniq -c | sort -nr  | sed -e "s/^ *//" | tr " " "\\t"  > {output.outfile} 2> {log} && [[ -s {output.outfile} ]]'
 
 rule do_tj:
+    input:
+        expand(os.path.join(FASTA, f"{{sample}}_good_out.fasta" ), sample=SAMPLES)
     output:
         os.path.join(SMALT_OUT,'tj.txt')
     params:
