@@ -128,7 +128,7 @@ rule do_tj:
     output:
         os.path.join(SMALT_OUT,'tj.txt')
     params:
-        datadir = FASTA,
+        datadir = lambda wildcards, input: os.path.dirname(input[0]),
         outdir= lambda wildcards, output: os.path.dirname(output[0])
 #        outdir  = SMALT_OUT
     conda:
