@@ -32,8 +32,8 @@ jobs:
       with:
         directory: '.'
         snakefile: 'Snakefile'
-       args: '--cores 1'
-       stagein: 'conda env update --file environment.yml --name base' 
+        args: '--cores 1'
+        stagein: 'conda env update --file environment.yml --name base' 
 #    - name: testing
 #      run:  |
 #        snakemake --configfile sample.json -p -F --cores 4
